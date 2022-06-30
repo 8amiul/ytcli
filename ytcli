@@ -1,0 +1,77 @@
+#!/bin/bash
+
+#<------------------- [ Variables ] ---------------------->
+
+loc="/tmp/webpage"
+tmp="/tmp/.deleteitifyouwant"
+tag="https://vid.puffyan.us/search?q="
+
+#<------------------------------------------------------->
+function ytcli_Video {
+echo "Youtube-CLI"
+search="$(echo "                                     " | dmenu)"
+noplus="$(sed 's/ /+/g' <<< "$search")"
+curl "$tag$noplus" > $loc
+video="$(cat $loc | grep -i '<p dir="auto">' | cut -d '>' -f 2 | sed 's/<\/p//g' | dmenu)"
+echo "$video" > /tmp/.deleteitifyouwant
+link="$(cat $loc | grep -iA11 -F -f $tmp | grep -i "watch on youtube" | cut -d '"' -f 4)"
+
+
+
+if [ -v $video ]; then
+    echo "Failed"
+    echo "$video"
+    rm $loc
+else
+    mpv $link
+    rm $loc $tmp
+fi
+
+}
+
+
+function ytcli_Audio {
+echo "Youtube-CLI"
+search="$(echo "                                     " | dmenu)"
+noplus="$(sed 's/ /+/g' <<< "$search")"
+curl "$tag$noplus" > $loc
+video="$(cat $loc | grep -i '<p dir="auto">' | cut -d '>' -f 2 | sed 's/<\/p//g' | dmenu)"
+echo "$video" > /tmp/.deleteitifyouwant
+link="$(cat $loc | grep -iA11 -F -f $tmp | grep -i "watch on youtube" | cut -d '"' -f 4)"
+
+
+
+if [ -v $video ]; then
+    echo "Failed"
+    echo "$video"
+    rm $loc
+else
+    mpv --vo=null --video=no --no-video --term-osd-bar --no-resume-playback $link
+    rm $loc $tmp
+fi
+
+}
+
+function help_ {
+    echo "Usage: ytcli [OPTION]"
+    echo "-h, Shows this help panel"
+    echo "-a, Only plays audio"
+    echo "    If no arguments is given then it will output Video"
+}
+
+
+if 
+    [ "$1" = "-a" ];
+then
+    ytcli_Audio; echo
+elif 
+    [ "$1" = "-h" ];
+then
+    help_; echo
+else
+    ytcli_Video; echo
+fi
+
+
+
+
