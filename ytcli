@@ -7,17 +7,9 @@ tmp="/tmp/.deleteitifyouwant"
 tag="https://vid.puffyan.us/search?q="
 
 #<------------------------------------------------------->
-function ytcli_Video {
-echo "Youtube-CLI"
-search="$(echo "                                     " | dmenu)"
-noplus="$(sed 's/ /+/g' <<< "$search")"
-curl "$tag$noplus" > $loc
-video="$(cat $loc | grep -i '<p dir="auto">' | cut -d '>' -f 2 | sed 's/<\/p//g' | dmenu)"
-echo "$video" > /tmp/.deleteitifyouwant
-link="$(cat $loc | grep -iA11 -F -f $tmp | grep -i "watch on youtube" | cut -d '"' -f 4)"
 
 
-
+function Video_0_1 {
 if [ -v $video ]; then
     echo "Failed"
     echo "$video"
@@ -26,21 +18,9 @@ else
     mpv $link
     rm $loc $tmp
 fi
-
 }
 
-
-function ytcli_Audio {
-echo "Youtube-CLI"
-search="$(echo "                                     " | dmenu)"
-noplus="$(sed 's/ /+/g' <<< "$search")"
-curl "$tag$noplus" > $loc
-video="$(cat $loc | grep -i '<p dir="auto">' | cut -d '>' -f 2 | sed 's/<\/p//g' | dmenu)"
-echo "$video" > /tmp/.deleteitifyouwant
-link="$(cat $loc | grep -iA11 -F -f $tmp | grep -i "watch on youtube" | cut -d '"' -f 4)"
-
-
-
+function Audio_0_1 {
 if [ -v $video ]; then
     echo "Failed"
     echo "$video"
@@ -49,7 +29,60 @@ else
     mpv --vo=null --video=no --no-video --term-osd-bar --no-resume-playback $link
     rm $loc $tmp
 fi
+}
 
+disp_check="$(ps -e | grep X | wc -l)"
+
+function ytcli_Video {
+if 
+	[[ "$disp_check" = "1" ]]; then
+
+	echo "Youtube-CLI"
+	search="$(echo "                                     " | dmenu)"
+	noplus="$(sed 's/ /+/g' <<< "$search")"
+	curl "$tag$noplus" > $loc
+	video="$(cat $loc | grep -i '<p dir="auto">' | cut -d '>' -f 2 | sed 's/<\/p//g' | dmenu)"
+	echo "$video" > /tmp/.deleteitifyouwant
+	link="$(cat $loc | grep -iA11 -F -f $tmp | grep -i "watch on youtube" | cut -d '"' -f 4)"
+	Video_0_1
+
+elif 
+	[[ "$disp_check" = "0" ]]; then
+
+	echo "Youtube-CLI"
+	read -p 'Search: ' search
+	noplus="$(sed 's/ /+/g' <<< "$search")"
+	curl "$tag$noplus" > $loc
+	video="$(cat $loc | grep -i '<p dir="auto">' | cut -d '>' -f 2 | sed 's/<\/p//g' | fzf)"
+	echo "$video" > /tmp/.deleteitifyouwant
+	link="$(cat $loc | grep -iA11 -F -f $tmp | grep -i "watch on youtube" | cut -d '"' -f 4)"
+	Video_0_1
+fi
+}
+
+function ytcli_Audio {
+if 
+	[[ "$disp_check" = "1" ]]; then
+
+	echo "Youtube-CLI"
+	search="$(echo "                                     " | dmenu)"
+	noplus="$(sed 's/ /+/g' <<< "$search")"
+	curl "$tag$noplus" > $loc
+	video="$(cat $loc | grep -i '<p dir="auto">' | cut -d '>' -f 2 | sed 's/<\/p//g' | dmenu)"
+	echo "$video" > /tmp/.deleteitifyouwant
+	link="$(cat $loc | grep -iA11 -F -f $tmp | grep -i "watch on youtube" | cut -d '"' -f 4)"
+	Audio_0_1
+elif
+	[[ "$disp_check" = "0" ]]; then
+
+	echo "Youtube-CLI"
+	read -p 'Search: ' search
+	noplus="$(sed 's/ /+/g' <<< "$search")"
+	curl "$tag$noplus" > $loc
+	video="$(cat $loc | grep -i '<p dir="auto">' | cut -d '>' -f 2 | sed 's/<\/p//g' | fzf)"
+	echo "$video" > /tmp/.deleteitifyouwant
+	link="$(cat $loc | grep -iA11 -F -f $tmp | grep -i "watch on youtube" | cut -d '"' -f 4)"
+fi
 }
 
 function help_ {
@@ -58,7 +91,6 @@ function help_ {
     echo "-a, Only plays audio"
     echo "    If no arguments is given then it will output Video"
 }
-
 
 if 
     [ "$1" = "-a" ];
@@ -71,7 +103,3 @@ then
 else
     ytcli_Video; echo
 fi
-
-
-
-
