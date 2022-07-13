@@ -22,6 +22,6 @@ You have to modify the script a little bit. Such as if you got fzf instead dmenu
 ### Installation
 
 ```sh
-$ sudo curl -sL "https://raw.githubusercontent.com/8amiulyt/ytcli/main/ytcli" -o /usr/local/bin/ytcli
+$ sudo curl -sL "https://raw.githubusercontent.com/8amiul/ytcli/main/ytcli" -o /usr/local/bin/ytcli
 $ sudo chmod +x /usr/local/bin/ytcli
 ```
